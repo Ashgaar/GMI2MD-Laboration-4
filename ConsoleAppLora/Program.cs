@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 using ALoRa.Library;
 using Parser;
 using Elsys.Decoder;
+using InfluxDB.Client;
+using InfluxDB.Client.Api.Domain;
+using InfluxDB.Client.Core;
+using InfluxDB.Client.Writes;
 
 
 
@@ -65,9 +69,36 @@ namespace ConsoleApp.Lora
             if (deviceId.EndsWith("fd") || deviceId.EndsWith("fe"))
             {
                 Console.WriteLine($"Decoded messages: AccMotion {cleanData.AccMotion}, ExternalTemperature {cleanData.ExternalTemperature}, Humidity {cleanData.Humidity}, Pressure {cleanData.Pressure}, Temperature {cleanData.Temperature}, Vdd {cleanData.Vdd}, X {cleanData.X}, Y {cleanData.Y}, Z {cleanData.Z}");
+
+                WriteElt2Point();
             }
         }
 
+        private static void WriteElt2Point(WriteOptions writeOptions, Data data, string deviceId)
+        {
+
+
+
+            var client = new InfluxDBClient("http://localhost:9999",
+                       "my-user", "my-password");
+
+
+            using (var writeClient = client.GetWriteApi(writeOptions))
+            {
+                if(writeClient != null)
+                {
+                    DateTime dt = DateTime.UtcNow.AddSeconds(-10);
+
+                    var point = PointData.Measurement("ELT2")
+                        .Tag("DEVICE_ID", deviceId)
+                        .Field("TEMPERATURE", data.Temperature)
+                        .Timestamp(dt, WritePrecision.Ms);
+                    writeClient.WritePoint(point,"elt2", deviceId);
+
+                }
+
+            }
+        }
 
 
     }
