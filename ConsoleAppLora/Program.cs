@@ -54,7 +54,8 @@ namespace ConsoleApp.Lora
             Console.WriteLine($"Message Timestamp: {obj.Timestamp}, Device: {obj.DeviceID}, Topic: {obj.Topic}, Payload: {data}");
 
 
-            var cleanData = Elsys.Decoder.Decoder.Decode(data);
+            var normalData = data.Replace("-", "");
+            var cleanData = Elsys.Decoder.Decoder.Decode(normalData);
 
             DisplayMessage(deviceId,cleanData);
         }
@@ -64,14 +65,15 @@ namespace ConsoleApp.Lora
             {
                 Console.WriteLine($"Decoded messages: Co2 {cleanData.Co2}, Humidity {cleanData.Humidity}, Light {cleanData.Light}, Motion {cleanData.Motion}, Temperature {cleanData.Temperature}, Vdd {cleanData.Vdd}");
 
-                //WriteEc2Point();
+                elsysSensorWriter.WriteEc2Point(cleanData,deviceId);
             }
             
             if (deviceId.EndsWith("fd") || deviceId.EndsWith("fe"))
             {
                 Console.WriteLine($"Decoded messages: AccMotion {cleanData.AccMotion}, ExternalTemperature {cleanData.ExternalTemperature}, Humidity {cleanData.Humidity}, Pressure {cleanData.Pressure}, Temperature {cleanData.Temperature}, Vdd {cleanData.Vdd}, X {cleanData.X}, Y {cleanData.Y}, Z {cleanData.Z}");
 
-                //WriteElt2Point();
+
+                elsysSensorWriter.WriteElt2Point(cleanData,deviceId);
             }
         }
     }
