@@ -10,9 +10,7 @@ using InfluxDB.Client;
 using InfluxDB.Client.Api.Domain;
 using InfluxDB.Client.Core;
 using InfluxDB.Client.Writes;
-
-
-
+using ConsoleAppLora;
 
 namespace ConsoleApp.Lora
 {
@@ -27,6 +25,7 @@ namespace ConsoleApp.Lora
             string TTN_ACCESS_KEY = "NNSXS.GTNTSDWU4ZBW365PKTHWGE4KL67KY75ZHVKCMZA.AC2JT7W3WIRZ3PVLQQXCAYFUTCWM5426VBVSAB7OC4GDBIC5SBQQ";
             string TTN_REGION = "eu1";
 
+            
 
             using (var app = new TTNApplication(TTN_APP_ID, TTN_ACCESS_KEY, TTN_REGION))
             {
@@ -64,42 +63,16 @@ namespace ConsoleApp.Lora
             if(deviceId.EndsWith("a4") || deviceId.EndsWith("a5"))
             {
                 Console.WriteLine($"Decoded messages: Co2 {cleanData.Co2}, Humidity {cleanData.Humidity}, Light {cleanData.Light}, Motion {cleanData.Motion}, Temperature {cleanData.Temperature}, Vdd {cleanData.Vdd}");
-            }
 
+                //WriteEc2Point();
+            }
+            
             if (deviceId.EndsWith("fd") || deviceId.EndsWith("fe"))
             {
                 Console.WriteLine($"Decoded messages: AccMotion {cleanData.AccMotion}, ExternalTemperature {cleanData.ExternalTemperature}, Humidity {cleanData.Humidity}, Pressure {cleanData.Pressure}, Temperature {cleanData.Temperature}, Vdd {cleanData.Vdd}, X {cleanData.X}, Y {cleanData.Y}, Z {cleanData.Z}");
 
-                WriteElt2Point();
+                //WriteElt2Point();
             }
         }
-
-        private static void WriteElt2Point(WriteOptions writeOptions, Data data, string deviceId)
-        {
-
-
-
-            var client = new InfluxDBClient("http://localhost:9999",
-                       "my-user", "my-password");
-
-
-            using (var writeClient = client.GetWriteApi(writeOptions))
-            {
-                if(writeClient != null)
-                {
-                    DateTime dt = DateTime.UtcNow.AddSeconds(-10);
-
-                    var point = PointData.Measurement("ELT2")
-                        .Tag("DEVICE_ID", deviceId)
-                        .Field("TEMPERATURE", data.Temperature)
-                        .Timestamp(dt, WritePrecision.Ms);
-                    writeClient.WritePoint(point,"elt2", deviceId);
-
-                }
-
-            }
-        }
-
-
     }
 }

@@ -30,13 +30,92 @@ namespace ConsoleAppLora
 
 
 
-        public static async Task<InfluxDBClient> Main(string[] args)
-        {
-            var client = new InfluxDBClient("http://localhost:9999","my-user", "my-password");
-            return client;
-        }
+        //public static async Task<InfluxDBClient> InvokeInfluxClient()
+        //{
+        //    var client = new InfluxDBClient("http://localhost:9999", "my-user", "my-password");
+        //    return client;
+        //}
 
         private static void WriteElt2Point(InfluxDBClient influxDB,WriteOptions writeOptions, Data data, string deviceId)
+        {
+
+
+
+            //var client = new InfluxDBClient("http://localhost:9999",
+            //           "my-user", "my-password");
+
+            
+            using (var writeClient = influxDB.GetWriteApi(writeOptions))
+            {
+                if (writeClient != null)
+                {
+                    DateTime dt = DateTime.UtcNow.AddSeconds(-10);
+
+                    var point = PointData.Measurement("elt2")
+                        .Tag("DEVICE_ID", deviceId)
+                        .Field(ACC_MOTION, data.AccMotion)
+                        .Timestamp(dt, WritePrecision.Ms);
+                    writeClient.WritePoint(point, "elt2", "org_id");
+
+
+                    point = PointData.Measurement("elt2")
+                        .Tag("DEVICE_ID", deviceId)
+                        .Field(EXTERNAL_TEMPERATURE, data.ExternalTemperature)
+                        .Timestamp(dt, WritePrecision.Ms);
+                    writeClient.WritePoint(point, "elt2", "org_id");
+
+
+
+                    point = PointData.Measurement("elt2")
+                        .Tag("DEVICE_ID", deviceId)
+                        .Field(HUMIDITY, data.Humidity)
+                        .Timestamp(dt, WritePrecision.Ms);
+                    writeClient.WritePoint(point, "elt2", "org_id");
+
+
+
+                    point = PointData.Measurement("elt2")
+                        .Tag("DEVICE_ID", deviceId)
+                        .Field(PRESSURE, data.Pressure)
+                        .Timestamp(dt, WritePrecision.Ms);
+                    writeClient.WritePoint(point, "elt2", "org_id");
+
+                    point = PointData.Measurement("elt2")
+                        .Tag("DEVICE_ID", deviceId)
+                        .Field(TEMPERATURE, data.Temperature)
+                        .Timestamp(dt, WritePrecision.Ms);
+                    writeClient.WritePoint(point, "elt2", "org_id");
+
+                    point = PointData.Measurement("elt2")
+                        .Tag("DEVICE_ID", deviceId)
+                        .Field(VDD, data.Vdd)
+                        .Timestamp(dt, WritePrecision.Ms);
+                    writeClient.WritePoint(point, "elt2", "org_id");
+
+                    point = PointData.Measurement("elt2")
+                        .Tag("DEVICE_ID", deviceId)
+                        .Field(XX, data.X)
+                        .Timestamp(dt, WritePrecision.Ms);
+                    writeClient.WritePoint(point, "elt2", "org_id");
+
+                    point = PointData.Measurement("elt2")
+                        .Tag("DEVICE_ID", deviceId)
+                        .Field(YY, data.Y)
+                        .Timestamp(dt, WritePrecision.Ms);
+                    writeClient.WritePoint(point, "elt2", "org_id");
+
+                    point = PointData.Measurement("elt2")
+                        .Tag("DEVICE_ID", deviceId)
+                        .Field(ZZ, data.Z)
+                        .Timestamp(dt, WritePrecision.Ms);
+                    writeClient.WritePoint(point, "elt2", "org_id");
+
+                }
+
+            }
+        }
+
+        private static void WriteEc2Point(InfluxDBClient influxDB, WriteOptions writeOptions, Data data, string deviceId)
         {
 
 
@@ -51,11 +130,42 @@ namespace ConsoleAppLora
                 {
                     DateTime dt = DateTime.UtcNow.AddSeconds(-10);
 
-                    var point = PointData.Measurement("ELT2")
+                    var point = PointData.Measurement("elt2")
                         .Tag("DEVICE_ID", deviceId)
-                        .Field("TEMPERATURE", data.Temperature)
+                        .Field(CO2, data.Co2)
                         .Timestamp(dt, WritePrecision.Ms);
-                    writeClient.WritePoint(point, "elt2", deviceId);
+                    writeClient.WritePoint(point, "elt2", "org_id");
+
+                    point = PointData.Measurement("elt2")
+                        .Tag("DEVICE_ID", deviceId)
+                        .Field(HUMIDITY, data.Humidity)
+                        .Timestamp(dt, WritePrecision.Ms);
+                    writeClient.WritePoint(point, "elt2", "org_id");
+
+                    point = PointData.Measurement("elt2")
+                        .Tag("DEVICE_ID", deviceId)
+                        .Field(LIGHT, data.Light)
+                        .Timestamp(dt, WritePrecision.Ms);
+                    writeClient.WritePoint(point, "elt2", "org_id");
+
+                    point = PointData.Measurement("elt2")
+                        .Tag("DEVICE_ID", deviceId)
+                        .Field(MOTION, data.Motion)
+                        .Timestamp(dt, WritePrecision.Ms);
+                    writeClient.WritePoint(point, "elt2", "org_id");
+
+                    point = PointData.Measurement("elt2")
+                        .Tag("DEVICE_ID", deviceId)
+                        .Field(TEMPERATURE, data.Temperature)
+                        .Timestamp(dt, WritePrecision.Ms);
+                    writeClient.WritePoint(point, "elt2", "org_id");
+
+                    point = PointData.Measurement("elt2")
+                        .Tag("DEVICE_ID", deviceId)
+                        .Field(VDD, data.Vdd)
+                        .Timestamp(dt, WritePrecision.Ms);
+                    writeClient.WritePoint(point, "elt2", "org_id");
+
 
                 }
 
