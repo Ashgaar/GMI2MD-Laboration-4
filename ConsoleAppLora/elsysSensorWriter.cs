@@ -35,8 +35,9 @@ namespace ConsoleAppLora
         public static void Write(Action<WriteApi> action)
         {
             var token = GetAppSettingValue("TOKEN");
+            var url = GetAppSettingValue("INFLUXDB_URL");
             //var token = "dUkMcGQtTzGKdBEvXWeZpJkI7E2ZckpBqsSk1lvpgKBtMDbCVEzxlT8OHviYkBvv2bTiex54J8kXxq4r-__FzA==";
-            
+            Console.WriteLine($"Sending to {token}");
             var writeOptions = new WriteOptions
             {
                 BatchSize = 5000,
@@ -44,7 +45,7 @@ namespace ConsoleAppLora
                 JitterInterval = 1000,
                 RetryInterval = 5000
             };
-            using var client = InfluxDBClientFactory.Create("http://localhost:8086", token);
+            using var client = InfluxDBClientFactory.Create(url, token);
             using var write = client.GetWriteApi(writeOptions);
             action(write);
         }
