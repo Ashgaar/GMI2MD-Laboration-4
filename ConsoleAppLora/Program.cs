@@ -38,10 +38,11 @@ namespace ConsoleApp.Lora
                 }
                 else
                 {
-                    Console.WriteLine("Press return to exit!");
-                    Console.ReadLine();
-                    Console.WriteLine("\nAloha, Goodbye, Vaarwel!");
-                    Thread.Sleep(1000);
+                    Thread.Sleep(Timeout.Infinite);
+                    //Console.WriteLine("Press return to exit!");
+                    //Console.ReadLine();
+                    //Console.WriteLine("\nAloha, Goodbye, Vaarwel!");
+                    //Thread.Sleep(1000);
                 }
                 app.Dispose();
             }
@@ -76,5 +77,40 @@ namespace ConsoleApp.Lora
                 elsysSensorWriter.WriteElt2Point(cleanData,deviceId);
             }
         }
+
+        /// <summary>
+        /// Use this method for App.config files outside the app folder: 
+        https://stackoverflow.com/questions/10656077/what-is-wrong-with-my-app-config-file
+/// </summary>
+/// <param name="appSettingKey"></param>
+/// <returns>Appsetting value</returns>
+        public static string GetAppSettingValue(string appSettingKey)
+        {
+            try
+            {
+                ExeConfigurationFileMap fileMap = new();
+                fileMap.ExeConfigFilename = "/vm/conf/App.config";
+                var configuration =
+                ConfigurationManager.OpenMappedExeConfiguration(fileMap,
+                ConfigurationUserLevel.None);
+                var value = configuration.AppSettings.Settings[appSettingKey].Value;
+                //var value = ConfigurationManager.AppSettings[appSettingKey];
+                if (string.IsNullOrEmpty(value))
+                {
+                    var message = $"Cannot find value for appSetting key: 
+                '{appSettingKey}'.";
+                throw new ConfigurationErrorsException(message);
+                }
+                return value;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"The appSettingKey: {appSettingKey} could not be 
+                read!");
+                Console.WriteLine($"Exception: {e.Message}");
+                return "";
+            }
+        }
+
     }
 }

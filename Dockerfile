@@ -1,41 +1,24 @@
-# https://hub.docker.com/_/microsoft-dotnet
-# https://github.com/dotnet/dotnet-docker/tree/main/samples/dotnetapp
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-# ubuntu-arm64
-#FROM mcr.microsoft.com/dotnet/sdk:7.0-jammy AS build
-WORKDIR /source
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-# copy csproj and restore as distinct layers
-#COPY *.csproj .
-# copy all project folders and sub-files from the .SLN root folder
-COPY . .
-# and restore as distinct layers
-RUN dotnet restore
-#RUN dotnet restore -r linux-arm64
-
-# copy and publish app and libraries, point out ENTRYPOINT
-#COPY . .
-RUN dotnet publish dark -c release -o /app --no-restore
-#RUN dotnet publish ConsoleAppLecture -c release -o /app --no-restore --self-contained --runtime linux-arm64
-
-# final stage, create image
-FROM mcr.microsoft.com/dotnet/runtime:6.0
-#FROM mcr.microsoft.com/dotnet/runtime:7.0-jammy-arm64v8
+FROM mcr.microsoft.com/dotnet/runtime:6.0 AS base
 WORKDIR /app
-COPY --from=build /app .
-ENTRYPOINT ["dotnet", "dark.dll"]
 
-# Build image with cache or not
-# docker build --no-cache -t hajo66/iot-repo:lora-ttn-lecture -f Dockerfile .
-# docker build -t hajo66/iot-repo:lora-ttn-lecture -f Dockerfile .
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /src
+COPY ["ConsoleAppLora/ConsoleAppLora.csproj", "ConsoleAppLora/"]
+COPY ["ALoRa.LibraryV3-main/ALoRa.Library.csproj", "ALoRa.LibraryV3-main/"]
+COPY ["CayenneParser/CayenneParser.csproj", "CayenneParser/"]
+COPY ["Elsys.Decoder.Test/Elsys.Decoder.Test.csproj", "Elsys.Decoder.Test/"]
+COPY ["Elsys.Decoder/Elsys.Decoder.csproj", "Elsys.Decoder/"]
+RUN dotnet restore "ConsoleAppLora/ConsoleAppLora.csproj"
+COPY . .
+WORKDIR "/src/ConsoleAppLora"
+RUN dotnet build "ConsoleAppLora.csproj" -c Release -o /app/build
 
-# Run interactive and remove container after stop
-# docker run -it --rm --name lora-ttn-app hajo66/iot-repo:lora-ttn-lecture
+FROM build AS publish
+RUN dotnet publish "ConsoleAppLora.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# As above run but also use a volume: https://docs.docker.com/storage/volumes/
-# docker run -v ////c/vm/conf:/vm/conf -it --rm --name lora-ttn-app hajo66/iot-repo:lora-ttn-lecture
-
-# Publish on other host - How to copy Docker images from one host to another without using a repository
-# https://stackoverflow.com/questions/23935141/how-to-copy-docker-images-from-one-host-to-another-without-using-a-repository
-# docker save -o c:/tmp/lora-ttn.tar lora-ttn-lecture:latest
-# docker load -i c:/tmp/lora-ttn.tar
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "ConsoleAppLora.dll"]
