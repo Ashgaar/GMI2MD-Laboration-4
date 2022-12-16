@@ -37,7 +37,7 @@ namespace ConsoleAppLora
             var token = GetAppSettingValue("TOKEN");
             var url = GetAppSettingValue("INFLUXDB_URL");
             //var token = "dUkMcGQtTzGKdBEvXWeZpJkI7E2ZckpBqsSk1lvpgKBtMDbCVEzxlT8OHviYkBvv2bTiex54J8kXxq4r-__FzA==";
-            Console.WriteLine($"Sending to {token}");
+            Console.WriteLine($"\nSending to {token} \n at {url} \n");
             var writeOptions = new WriteOptions
             {
                 BatchSize = 5000,

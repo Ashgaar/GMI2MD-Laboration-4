@@ -30,6 +30,7 @@ namespace ConsoleApp.Lora
             string TTN_ACCESS_KEY = GetAppSettingValue("TTN_API_KEY");
             string TTN_REGION = GetAppSettingValue("TTN_REGION");
 
+            Console.WriteLine($"\nHooked up using {TTN_APP_ID} \n {TTN_ACCESS_KEY} \n {TTN_REGION}")
 
 
             using (var app = new TTNApplication(TTN_APP_ID, TTN_ACCESS_KEY, TTN_REGION))
