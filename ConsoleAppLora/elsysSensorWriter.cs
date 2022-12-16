@@ -11,6 +11,7 @@ using InfluxDB.Client.Writes;
 using Newtonsoft.Json.Linq;
 using System.Configuration;
 
+
 namespace ConsoleAppLora
 {
     public static class elsysSensorWriter
@@ -31,23 +32,11 @@ namespace ConsoleAppLora
         private const string TIME_STAMP = "timeStamp";
 
 
-
-
-        //public static async Task Main(string[] args)
-        //{
-        //    // You can generate an API token from the "API Tokens Tab" in the UI
-        //    //var token = Environment.GetEnvironmentVariable("INFLUX_TOKEN")!;
-
-
-        //    var client = InfluxDBClientFactory.Create("http://localhost:8086", token);
-        //}
-
-
         public static void Write(Action<WriteApi> action)
         {
-
-            var token = getapp;
-
+            var token = GetAppSettingValue("TOKEN");
+            //var token = "dUkMcGQtTzGKdBEvXWeZpJkI7E2ZckpBqsSk1lvpgKBtMDbCVEzxlT8OHviYkBvv2bTiex54J8kXxq4r-__FzA==";
+            
             var writeOptions = new WriteOptions
             {
                 BatchSize = 5000,
@@ -304,6 +293,39 @@ namespace ConsoleAppLora
 
             //    }
             //}
+        }
+
+        /// <summary>
+        /// Use this method for App.config files outside the app folder: https://stackoverflow.com/questions/10656077/what-is-wrong-with-my-app-config-file
+        /// </summary>
+        /// <param name="appSettingKey"></param>
+        /// <returns>Appsetting value</returns>
+        public static string GetAppSettingValue(string appSettingKey)
+        {
+            try
+            {
+                ExeConfigurationFileMap fileMap = new();
+                //fileMap.ExeConfigFilename = "/vm/conf/App.config";
+
+                fileMap.ExeConfigFilename = @"C:\Users\zangi\Programmering\IT-säkerhet högskolan dalarna\GMI2MD IoT\Laboration 4\lab4-IoT Monitoring System\dark/App.config";
+
+                var configuration = ConfigurationManager.OpenMappedExeConfiguration(fileMap, ConfigurationUserLevel.None);
+                var value = configuration.AppSettings.Settings[appSettingKey].Value;
+
+                //var value = ConfigurationManager.AppSettings[appSettingKey];
+                if (string.IsNullOrEmpty(value))
+                {
+                    var message = $"Cannot find value for appSetting key: '{appSettingKey}'.";
+                    throw new ConfigurationErrorsException(message);
+                }
+                return value;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"The appSettingKey: {appSettingKey} could not be read!");
+                Console.WriteLine($"Exception: {e.Message}");
+                return "";
+            }
         }
     }
 }
