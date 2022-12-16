@@ -305,9 +305,9 @@ namespace ConsoleAppLora
             try
             {
                 ExeConfigurationFileMap fileMap = new();
-                //fileMap.ExeConfigFilename = "/vm/conf/App.config";
+                fileMap.ExeConfigFilename = "/vm/conf/App.config";
 
-                fileMap.ExeConfigFilename = @"C:\Users\zangi\Programmering\IT-säkerhet högskolan dalarna\GMI2MD IoT\Laboration 4\lab4-IoT Monitoring System\dark/App.config";
+                //fileMap.ExeConfigFilename = @"C:\Users\zangi\Programmering\IT-säkerhet högskolan dalarna\GMI2MD IoT\Laboration 4\lab4-IoT Monitoring System\dark/App.config";
 
                 var configuration = ConfigurationManager.OpenMappedExeConfiguration(fileMap, ConfigurationUserLevel.None);
                 var value = configuration.AppSettings.Settings[appSettingKey].Value;
