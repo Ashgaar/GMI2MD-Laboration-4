@@ -9,6 +9,7 @@ using InfluxDB.Client.Api.Domain;
 using InfluxDB.Client.Core;
 using InfluxDB.Client.Writes;
 using Newtonsoft.Json.Linq;
+using System.Configuration;
 
 namespace ConsoleAppLora
 {
@@ -45,7 +46,7 @@ namespace ConsoleAppLora
         public static void Write(Action<WriteApi> action)
         {
 
-            var token = "dUkMcGQtTzGKdBEvXWeZpJkI7E2ZckpBqsSk1lvpgKBtMDbCVEzxlT8OHviYkBvv2bTiex54J8kXxq4r-__FzA==";
+            var token = getapp;
 
             var writeOptions = new WriteOptions
             {
